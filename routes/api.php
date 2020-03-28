@@ -16,9 +16,9 @@ use Illuminate\Http\Request;
 Route::any('/', function () {
     return 'hi api!';
 });
-Route::any(['prefix' => 'admin'],function (){
-    Route::any('passport/login', 'Api\Admin\PassportController@login');
-});
-Route::any(['prefix' => 'user'],function (){
-    Route::any();
-});
+//Route::any(['prefix' => 'admin'],function (){
+//    Route::any('passport/login', 'Api\Admin\PassportController@login');
+//});
+//Route::any(['prefix' => 'user'],function (){
+//    Route::any();
+//});
