@@ -13,6 +13,10 @@ use Unit\Stringunit;
 class PassportController extends Controller
 {
 
+    /**
+     * @return PassportController
+     * 后台登录
+     */
     public function login(){
         $id = $this->req['id'];
         $password = $this->req['password'];
@@ -48,9 +52,14 @@ class PassportController extends Controller
             ]);
         }
         $token = Jwtunit::getToken($id,1800);
+        Cache::put($token,$id,30);
         return $this->resp(['token'=>$token]);
     }
 
+    /**
+     * @return PassportController
+     * 后台注册
+     */
     public function add(){
         $id = $this->req['id'];
         $password = $this->req['password'];
@@ -73,5 +82,17 @@ class PassportController extends Controller
                 'msg'=>"添加管理员失败",
             ]);
         }
+    }
+
+    /**
+     * @return PassportController
+     * 后台注销
+     */
+    public function logout(){
+        $token = $this->req['token'];
+        if(Cache::has($token)){
+            Cache::forget($token);
+        }
+        return $this->resp(200,'注销成功');
     }
 }
