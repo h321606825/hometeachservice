@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Api\Admin\Passport;
 
 
+use App\Http\Controllers\Api\ConstVariable;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
@@ -21,10 +22,14 @@ class PassportController extends Controller
         $id = $this->req['id'];
         $password = $this->req['password'];
         $captcha = $this->req['captcha'];
+        $type = $this->req['type'];
+        if(!array_key_exists($type,ConstVariable::TYPE)){
+            return $this->resp(1,'错误的场景类型');
+        }
         Checkunit::verification($id,-1,'账号',strlen($id));
         Checkunit::verification($password,-1,"密码",strlen($password));
         Checkunit::verification($captcha,-1,"验证码",4);
-        $captchaKey = md5($_SERVER['REMOTE_ADDR'] . $_SERVER['HTTP_USER_AGENT']);
+        $captchaKey = md5(ConstVariable::TYPE[$type].$_SERVER['REMOTE_ADDR'] . $_SERVER['HTTP_USER_AGENT']);
         $captchaInCache = Cache::get($captchaKey);
         if(empty($captchaInCache)){
             return $this->resp([
@@ -52,7 +57,7 @@ class PassportController extends Controller
             ]);
         }
         $token = Jwtunit::getToken($id,1800);
-        Cache::put($token,$id,30);
+        Cache::put(md5($token),$id . 'isAdmin',30);
         return $this->resp(['token'=>$token]);
     }
 

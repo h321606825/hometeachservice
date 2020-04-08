@@ -18,7 +18,7 @@ class UserInfoService extends BaseService
         ];
         $db = DB::table('hs_admin');
         $data = $db->select($select)->where($where)->get()->toArray();
-        return json_decode(json_encode($data,true),true);
+        return self::stdToArray($data);
     }
 
     public static function addAdmin($id,$password){
