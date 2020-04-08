@@ -19,13 +19,13 @@ class Checkunit
         $res['code'] = 404;
         if (empty($receive)) {
             $res['msg'] = $desc . '不能为空';
-            return $res;
+            exit(json_encode($res));
         }
         if (!empty($num) && $num > 0) {
             $len = mb_strlen($receive, 'UTF8');
             if ($len > $num) {
                 $res['msg'] = $desc . '不能超过' . floor($num) . '个字符';
-                return $res;
+                exit(json_encode($res));
             }
         }
 
@@ -66,13 +66,9 @@ class Checkunit
                 $rules = '//';
                 break;
         }
-        if (preg_match($rules, $receive)) {
-            $res['code'] = 200;
-            $res['msg'] = '校验通过';
-            return $res;
-        } else {
+        if (!preg_match($rules, $receive)) {
             $res['msg'] = $desc . '参数不合法';
-            return $res;
+            exit(json_encode($res));
         }
 
     }

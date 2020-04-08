@@ -22,7 +22,7 @@ Route::any('admin/passport/add','Api\Admin\Passport\PassportController@add');
 Route::any('admin/passport/login', 'Api\Admin\Passport\PassportController@login');
 //管理员注销
 Route::any('admin/passport/logout', 'Api\Admin\Passport\PassportController@loginout');
-//密码更新
+//密码更新 不需要？
 Route::any('admin/passport/update', 'Api\Admin\Passport\PassportController@updatePassport');
 //编辑学员
 Route::any('admin/user/updateStu', 'Api\Admin\UserController@updateStu');
@@ -35,10 +35,20 @@ Route::any('admin/user/deleteTea', 'Api\Admin\UserController@deleteTea');
 //网站基本信息配置
 Route::any('admin/base/list', 'Api\Admin\UserController@getList');
 
-//用户注册
-Route::any('user/insert', 'Api\User\UserController@insertUser');
-//用户列表
-Route::any('user/list', 'Api\User\UserController@getList');
+//教师注册
+Route::any('user/register/tea', 'Api\User\UserController@registerTea');
+//用户登录
+Route::any('user/login','Api\User\UserController@login');
+//用户退出登录
+Route::any('user/logout','Api\User\UserController@logout');
+//学生注册
+Route::any('user/register/stu',"Api\User\UserController@registerStu");
+//个人中心
+Route::any('user/self','Api\User\UserController@userSelf');
+//学员列表
+Route::any('user/stu/list', 'Api\User\UserController@getStuList');
+//教员列表
+Route::any('user/tea/list','Api\User\UserController@getTeaList');
 //用户修改
 Route::any('user/update', 'Api\User\UserController@updateUser');
 //用户删除
