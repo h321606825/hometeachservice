@@ -43,22 +43,27 @@ class BaseController extends Controller
     /**
      * 上传文件
      */
-    public function uploadFile(Request $request){ if ($request->isMethod('POST')){
-        $file = $request->file('source');
+    public function uploadFile(Request $request){
+//        $file = $request->file('upload');
         //判断文件是否上传成功
-        if ($file->isValid()){
+        if ($_FILES["upload"]["error"] == 0){
             //原文件名
-            $originalName = $file->getClientOriginalName();
+//            $originalName = $file->getClientOriginalName();
+            $originalName = $_FILES['upload']['name'];
+            Log::info($originalName);
             //扩展名
-            $ext = $file->getClientOriginalExtension();
+//            $ext = $file->getClientOriginalExtension();
             //MimeType
-            $type = $file->getClientMimeType();
+//            $type = $file->getClientMimeType();
+            $type = $_FILES['upload']['type'];
+            Log::info($type);
             //临时绝对路径
-            $realPath = $file->getRealPath();
-            $filename = uniqid().$originalName.$ext;
+//            $realPath = $file->getRealPath();
+            $realPath = $_FILES['upload']['tmp_name'];
+//            $filename = uniqid().$originalName.$ext;
+            $filename = date("Y-m-d",time()) . $originalName;
             $bool = Storage::disk('photo')->put($filename,file_get_contents($realPath));
-
-            $url = Storage::url($filename);
+            $url = Storage::url('photo/'.$filename);
             //创建文件url及图片映射
 //            ServeService::fileUploade($filename,$url);
             //判断是否上传成功
@@ -75,7 +80,9 @@ class BaseController extends Controller
                     ]);
                 return $this->resp(1,'文件上传失败');
             }
+        }else{
+            Log::info('文件上传失败', $_FILES);
+            return $this->resp(1,'文件上传失败');
         }
-    }
     }
 }

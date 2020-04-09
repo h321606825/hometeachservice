@@ -65,7 +65,7 @@ return [
 
         'photo' => [
             'driver' => 'local',
-            'root' => storage_path('app/photo'.date("Y-m-d")),
+            'root' => storage_path('app/public/photo'),
             'url' => env('APP_URL').'/storage/photo',
             'visibility' => 'public',
         ]

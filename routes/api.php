@@ -71,3 +71,5 @@ Route::any('base/user/teaList', 'Api\Base\InfoController@getTeaList');
 
 //获取图片验证码
 Route::any("base/getCaptcha",'Api\Base\BaseController@getCaptcha');
+//图片上传
+Route::any("base/uploadFile",'Api\Base\BaseController@uploadFile');
