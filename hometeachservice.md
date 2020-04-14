@@ -16,20 +16,30 @@
 ```
 ## 基础快
 1. 获取图片验证码
- - api/base/getCaptcha
- ```json
-{
-    "code": 200,
-    "msg": "ok",
-    "data": [
-        "captcha":"data:image/jpeg;base64,"
-]
-}
-```
-2 . 文件上传
+   - api/base/getCaptcha
+ 
+        request
+ 
+        ```json
+            {
+              "type": 1//1 => '管理员登录',2 => '用户登录',3 => '学生注册',4 => '教师注册'
+            }
+        ```
+ 
+         return
+         ```json
+        {
+            "code": 200,
+            "msg": "ok",
+            "data": [
+                "captcha":"data:image/jpeg;base64,"
+        ]
+        }
+        ```
+2. 文件上传
  - api/base/uploadFile
  
- 返回
+ return
 ```json
 {
     "code": 200,
@@ -42,89 +52,94 @@
 ## 后台模块
 ### 登录快
   1. 添加管理员
-     - api/admin/passport/add
-   ```json
-    {
-        "id": "root",
-        "passport": "passport"
-    }
-   ```
+        - api/admin/passport/add
+        
+            request
+           ```json
+            {
+                "id": "root",
+                "passport": "passport"
+            }
+           ```
   2. 登录
   
-    - api/admin/passport/login
+        - api/admin/passport/login
     
-   请求
-   ```json
-{
-  "id": "root",
-  "password": "password",
-  "captcha": "re23"
-} 
-   ```
-返回
-```json
-{
-    "code": 200,
-    "msg": "",
-    "data": [
-        {
-            "token": "******"
-     }
-    ]
-}
-```
+           request
+           ```json
+            {
+              "id": "root",
+              "password": "password",
+              "captcha": "re23"
+            } 
+           ```
+            return
+            ```json
+            {
+                "code": 200,
+                "msg": "",
+                "data": [
+                    {
+                        "token": "******"
+                 }
+                ]
+            }
+            ```
 
-   3. 退出
-     - api/admin/passport/logout
+  3. 退出
+      - api/admin/passport/logout
 
- 返回
-   ```json
-{
-    "code": 200,
-    "msg": "注销成功",
-     "data": []
-}
-```
+           return
+           ```json
+                {
+                    "code": 200,
+                    "msg": "注销成功",
+                     "data": []
+                }
+           ```
 
 ## 用户测
 
 1. 教师注册
     - api/user/register/tea
  
- 请求
- ```json
-{
-    "base": [
-    "phone":133333333,
-    "password":"12324342"
-    ],
-    "info": [
-    "name":"",
-    "gender":"1",//1是男，2是女
-    "mail":"",
-    "birth":"1996-1-3",
-    "QQ":"",
-    "vx":"",
-    "motto":"教员格言",
-    "major":"英语",
-    "resume":"个人简介",
-    "itic":0,//0-无教师证，1-有教师证   非必传
-    "flanguages":1,//1-英语，2-俄语   非必传
-    "putonghua":1,//1-较差，2-一般，3-标准   非必传
-    "experience":0,//1-有家教经验，0-无   非必传
-    "teaSpeciality":"",//教员特长   非必传
-    "class":id,//辅导课程id   非必传
-    "teaAddress":""//授课区域，香坊区    非必传
-    "teaWay":0,//授课方式，1-教员上门，2-网络远程，默认不限   非必传
-    "teaFee"30,//课程收费，0-面议，30-每小时30元   非必传
-    ],
-    "plan": ["1,a"], //非必传
-    "captcha": "fe4a"
-}
-```
+         request
+         ```json
+        {
+            "base": [
+            "phone":133333333,
+            "password":"12324342"
+            ],
+            "info": [
+            "name":"",
+            "gender":"1",//1是男，2是女
+            "mail":"",
+            "birth":"1996-1-3",
+            "QQ":"",
+            "vx":"",
+            "motto":"教员格言",
+            "major":"英语",
+            "resume":"个人简介",
+            "itic":0,//0-无教师证，1-有教师证   非必传
+            "flanguages":1,//1-英语，2-俄语   非必传
+            "putonghua":1,//1-较差，2-一般，3-标准   非必传
+            "experience":0,//1-有家教经验，0-无   非必传
+            "teaSpeciality":"",//教员特长   非必传
+            "class":id,//辅导课程id   非必传
+            "teaAddress":""//授课区域，香坊区    非必传
+            "teaWay":0,//授课方式，1-教员上门，2-网络远程，默认不限   非必传
+            "teaFee"30,//课程收费，0-面议，30-每小时30元   非必传
+            ],
+            "plan": ["1,a"], //非必传
+            "captcha": "fe4a"
+        }
+        ```
  2. 学生注册
      - api/user/register/stu
+            
+          request
           ```json
+         {
            "base": [
                "phone":133333333,
                "password":"12324342"
@@ -154,29 +169,34 @@
            ]
            "plan": ["1,a"],//非必传
            "captcha": "fe4a"
+         }
           ```
  
- 3 . 登录
- - api/user/login
+ 3. 登录
  
-     **注，同学生登录接口** 
+       - api/user/login
  
- 请求
-```json
-   "phone":13300000000,
-   "password":"vava",
-   "captcha":"1q2w"
-```
-返回
-```json
-{
-    "code": "fd",
-    "msg": "登录成功",
-    "data": [
-      "token":""
-]
-}
-```
+         **注，同学生登录接口** 
+ 
+         request
+         
+           ```json
+            {
+               "phone":13300000000,
+               "password":"vava",
+               "captcha":"1q2w"
+            }
+           ```
+          return
+            ```json
+            {
+                "code": "fd",
+                "msg": "登录成功",
+                "data": [
+                  "token":""
+            ]
+            }
+            ```
 
 4. 退出
     - api/user/logout
