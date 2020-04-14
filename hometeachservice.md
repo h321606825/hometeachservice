@@ -79,10 +79,10 @@
 }
 ```
 
-## 教师测
+## 用户测
 
-1. 注册
- - api/user/register/tea
+1. 教师注册
+    - api/user/register/tea
  
  请求
  ```json
@@ -101,13 +101,58 @@
     "motto":"教员格言",
     "major":"英语",
     "resume":"个人简介",
+    "itic":0,//0-无教师证，1-有教师证   非必传
+    "flanguages":1,//1-英语，2-俄语   非必传
+    "putonghua":1,//1-较差，2-一般，3-标准   非必传
+    "experience":0,//1-有家教经验，0-无   非必传
+    "teaSpeciality":"",//教员特长   非必传
+    "class":id,//辅导课程id   非必传
+    "teaAddress":""//授课区域，香坊区    非必传
+    "teaWay":0,//授课方式，1-教员上门，2-网络远程，默认不限   非必传
+    "teaFee"30,//课程收费，0-面议，30-每小时30元   非必传
     ],
-    "plan": ["1,a"],
+    "plan": ["1,a"], //非必传
     "captcha": "fe4a"
 }
 ```
- 2 . 登录
+ 2. 学生注册
+     - api/user/register/stu
+          ```json
+           "base": [
+               "phone":133333333,
+               "password":"12324342"
+               ],
+           "info": [
+               "name":"",
+               "email":"",
+               "school":"",
+               "grade":1, 
+               "class":id,//辅导科目
+               "stuInfo":"",//学员情况
+               "parentName":"",//家长姓名
+               "parentAppellation":"",//家长称呼
+               "address":"",//所在区域
+               "classAddress":"",//授课地址
+               "time":1, //授课时长
+               "fee":30,  //课时费用
+               "gender":"1",//1是男，2是女  非必传
+               "parentVX":"",//家长微信   非必传
+               ],
+           //teaAsk 非必传
+           "teaAsk":[
+               "teaNum":1,//教师数量
+               "teaGender":1,//教员性别
+               "teaWay":0,//授课方式
+               "teaInfo":"",//教员要求详述
+           ]
+           "plan": ["1,a"],//非必传
+           "captcha": "fe4a"
+          ```
+ 
+ 3 . 登录
  - api/user/login
+ 
+     **注，同学生登录接口** 
  
  请求
 ```json
@@ -120,7 +165,189 @@
 {
     "code": "fd",
     "msg": "登录成功",
-    "data": []
+    "data": [
+      "token":""
+]
 }
 ```
 
+4. 退出
+    - api/user/logout
+    
+    return
+    ```json
+   {
+     "code": 200,
+     "msg": "注销成功"
+    }
+    ```
+   
+5. 个人中心
+    - api/user/self
+    
+    *注，具体返回参数见注册参数*
+    
+    return
+    ```json
+       "code":"",
+       "msg":"ok",
+       "data":{
+           id:"",
+           phone:"",
+           identity:2,//2-tea,3-student
+       } 
+    ```
+6. 学员列表
+    - api/user/stu/list
+    
+    request
+    ```json
+    {
+       "size": 10,//页面显示10条
+       "offset": 1,//第几页
+    }
+    ```
+    
+    return
+    ```json
+     {
+       "code":"",
+        "msg":"ok",
+       "data":{
+                {
+                  "id": "",
+                "phone":133333333,
+                "password":"12324342",
+                "name":"",
+                 "email":"",
+                 "school":"",
+                 "grade":1, 
+                 "class":id,
+                 "stuInfo":"",
+                 "parentName":"",
+                 "parentAppellation":"",
+                 "address":"",
+                 "classAddress":"",
+                 "time":1, 
+                 "fee":30,  
+                 "gender":"1",
+                 "parentVX":""
+                },
+               {
+                 "id": "",
+               "phone":133333333,
+               "password":"12324342",
+               "name":"",
+                "email":"",
+                "school":"",
+                "grade":1, 
+                "class":id,
+                "stuInfo":"",
+                "parentName":"",
+                "parentAppellation":"",
+                "address":"",
+                "classAddress":"",
+                "time":1, 
+                "fee":30,  
+                "gender":"1",
+                "parentVX":""
+              }
+          }
+     }
+    ```
+7. 教员列表
+    - api/user/tea/list
+    
+    request
+    ```json
+    {
+       "size": 10,//页面显示10条
+       "offset": 1,//第几页
+    }
+    ```
+        
+    return
+    ```json
+       "code":"",
+       "msg":"ok",
+       "data":{
+               {
+                 id:"",
+                 phone:"",
+               },
+              {
+                id:"",
+                phone:"",
+             }
+         }
+    }
+    ```
+   
+8. 学员详情
+    - api/user/stu/info
+        
+        request
+        ```json
+          {
+            "id": 1//学员id
+          }
+        ```
+      
+       return
+       ```json
+        {
+          "id": "",
+          "phone":133333333,
+          "password":"12324342",
+          "name":"",
+           "email":"",
+           "school":"",
+           "grade":1, 
+           "class":id,
+           "stuInfo":"",
+           "parentName":"",
+           "parentAppellation":"",
+           "address":"",
+           "classAddress":"",
+           "time":1, 
+           "fee":30,  
+           "gender":"1",
+           "parentVX":""
+        }
+       ```
+      
+9. 教员详情
+    - api/api/user/tea/info
+      
+        request
+        ```json
+          {
+            "id": 1//学员id
+          }
+        ```
+        return
+        ```json
+          {
+            "id": 1,
+            "phone":133333333,
+            "password":"12324342",
+            "name":"",
+            "gender":"1",//1是男，2是女
+            "mail":"",
+            "birth":"1996-1-3",
+            "QQ":"",
+            "vx":"",
+            "motto":"教员格言",
+            "major":"英语",
+            "resume":"个人简介",
+            "itic":0,
+            "flanguages":1,
+            "putonghua":1,
+            "experience":0,
+            "teaSpeciality":"",
+            "class":id,
+            "teaAddress":"",
+            "teaWay":0,
+            "teaFee"30,
+          }       
+        ```
