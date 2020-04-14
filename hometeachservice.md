@@ -50,6 +50,7 @@
     }
    ```
   2. 登录
+  
     - api/admin/passport/login
     
    请求
@@ -63,7 +64,13 @@
 返回
 ```json
 {
-    "token": "******"
+    "code": 200,
+    "msg": "",
+    "data": [
+        {
+            "token": "******"
+     }
+    ]
 }
 ```
 
