@@ -57,6 +57,10 @@ Route::any('user/delete', 'Api\User\UserController@deleteUser');
 Route::any('user/stu/info', 'Api\User\InfoController@stuInfo');
 //学员详情
 Route::any('user/tea/info', 'Api\User\InfoController@teaInfo');
+//教员下单
+Route::any('/user/tea/order','Api\User\OrderController@teaOrder');
+//学员下单
+Route::any('/user/stu/order','Api\User\OrderController@stuOrder');
 
 //网站基本信息获取
 Route::any('base/info/get', 'Api\Base\InfoController@getInfo');

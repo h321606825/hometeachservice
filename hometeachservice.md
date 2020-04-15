@@ -481,7 +481,7 @@
         request
         ```json
         {
-          "teaId": 10101
+          "stuId": 10101
         }
         ```
         return//返回该用户的所有订单
