@@ -97,7 +97,54 @@
                      "data": []
                 }
            ```
-
+  4. 修改客服信息
+      - api/admin/user/customer
+      
+           request
+           ```json
+            {
+              "phone": 18080808080,
+              "qq": ""
+            }
+           ```
+           return
+           ```json
+            {
+                "code": 200,
+                "msg": "修改成功",
+                 "data": []
+            }
+           ```
+  5. 查看订单列表 
+      - api/admin/order/info
+            
+           request
+           ```json
+            {
+              "page": 1,//当前页
+              "size": 10,//页面大小
+            }
+           ```
+           
+           return
+           ```json
+            {
+              "code": 200,
+              "msg": "ok",
+              "data": [
+                {
+                  "stuName": "",
+                  "orderId":20202,
+                  "teaName": "",
+                  "stuPhone": "",
+                  "teaPhone": "",
+                  "state": ""//订单状态
+                },
+                {}
+              ]
+            }   
+           ```
+           
 ## 用户测
 
 1. 教师注册
@@ -378,3 +425,47 @@
             "teaFee"30,
           }       
         ```
+10. 获取客服信息
+    - api/user/info/customer
+    
+        return
+        ```json
+          {
+            "code":200,
+            "msg": "ok",
+            "data": {
+                "phone": 18880808080,
+                "qq": ""
+            }
+          }
+        ```
+11. 获取用户订单
+
+      - api/user/order/info
+            
+           request
+           ```json
+            {
+              "page": 1,//当前页
+              "size": 10,//页面大小
+            }
+           ```
+           
+           return
+           ```json
+            {
+              "code": 200,
+              "msg": "ok",
+              "data": [
+                {
+                  "stuName": "",
+                  "orderId":20202,
+                  "teaName": "",
+                  "stuPhone": "",
+                  "teaPhone": "",
+                  "state": ""//订单状态
+                },
+                {}
+              ]
+            }   
+           ```
