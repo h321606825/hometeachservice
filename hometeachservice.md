@@ -1,3 +1,9 @@
+#目录
+
+@[toc]
+
+---
+
 ##注意事项
 1. 所有登录后的接口，都必须传token
 2. 返回结构
@@ -469,3 +475,51 @@
               ]
             }   
            ```
+12. 教员下单
+    - api/user/tea/order
+    
+        request
+        ```json
+        {
+          "teaId": 10101
+        }
+        ```
+        return//返回该用户的所有订单
+        ```json
+        {
+           "code": 200,
+            "msg": "ok",
+            "data": {
+              "stuName": "",
+              "orderId":20202,
+              "teaName": "",
+              "stuPhone": "",
+              "teaPhone": "",
+              "state": ""//订单状态
+            }
+        }
+        ```
+13. 学员下单
+    - api/user/stu/order
+    
+        request
+        ```json
+        {
+          "teaId": 10101
+        }
+        ```
+        return//返回该用户的所有订单
+        ```json
+        {
+           "code": 200,
+            "msg": "ok",
+            "data": {
+              "stuName": "",
+              "orderId":20202,
+              "teaName": "",
+              "stuPhone": "",
+              "teaPhone": "",
+              "state": ""//订单状态
+            }
+        }
+        ```
