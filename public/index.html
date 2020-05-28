@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>家教系统</title>
+    <script src="js/vue.min.js"></script>
+</head>
+<body>
+<div id="app">
+    {{ message }}
+    <img src="" alt="请刷新页面" id="img">
+</div>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            message: 'Hello Vue!'
+        },
+        method(){
+        axios
+            .get('http://homeservice.win/api/base/getCaptcha?type=1')
+            .then(function (response) {
+                document.getElementById("img").src = response.data.captcha;
+            })
+            .catch(function (error) { // 请求失败处理
+                console.log(error);
+            });
+        },
+        methods:{
+            getCaptcha(){
+                axios
+                    .get('http://homeservice.win/api/base/getCaptcha?type=1')
+                    .then(function (response) {
+                        document.getElementById("img").src = response.data.captcha;
+                    })
+                    .catch(function (error) { // 请求失败处理
+                        console.log(error);
+                    });
+            }
+        },
+        created: function () {
+            this.method();
+        }
+    })
+</script>
+</body>
+</html>

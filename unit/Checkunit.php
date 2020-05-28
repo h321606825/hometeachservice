@@ -17,7 +17,7 @@ class Checkunit
     public static function verification($receive, $type = -1, $desc = '参数',$num = 0)
     {
         $res['code'] = 404;
-        if (empty($receive)) {
+        if (empty($receive) && $type!=4) {
             $res['msg'] = $desc . '不能为空';
             exit(json_encode($res));
         }

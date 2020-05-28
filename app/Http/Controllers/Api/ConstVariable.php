@@ -16,6 +16,7 @@ class ConstVariable
 
     //性别map
     const GENDER = [
+        0=>'不限',
         1=>'男',
         2=>'女'
     ];
@@ -39,6 +40,7 @@ class ConstVariable
 
     //教学方式
     const TEAWAY = [
+        0 => '不限',
         1 => '教员上门',
         2 => '网络远程'
     ];
@@ -57,6 +59,7 @@ class ConstVariable
 
     //外语等级
     const BAND = [
+        0=>'一般',
         1=>'四级',
         2=>'六级',
         3=>'专业八级',
@@ -67,4 +70,9 @@ class ConstVariable
         2=>'一般',
         3=>'标准',
     ];
+
+    //学生下单状态
+    const STUADDSTATE = 10;
+    //教师下单状态
+    const TEAADDSTATE = 20;
 }

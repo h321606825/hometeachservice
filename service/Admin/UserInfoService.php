@@ -31,9 +31,35 @@ class UserInfoService extends BaseService
         try {
             $db->insert($insert);
         }catch (\Exception $e){
-            Log::error("添加管理员异常".__CLASS__.__FUNCTION__,['line'=>__LINE__]);
+            Log::error("添加管理员异常".__CLASS__.__FUNCTION__,[
+                'info' => $e->getMessage(),
+                'line' => $e->getLine(),
+                ]);
             return false;
         }
         return true;
+    }
+
+    public static function updeteAdminCustomer($phone, $qq){
+        $update = [
+            'phone'=>$phone,
+            'qq'=>$qq,
+        ];
+
+        $where = [
+            'customer'=>1
+        ];
+
+        $db = DB::table('hs_admin');
+        try {
+            $db->update($update)->where($where);
+            return true;
+        }catch (\Exception $e){
+            Log::error('修改客服密码异常'.__CLASS__.__FUNCTION__,[
+                'info' => $e->getMessage(),
+                'line' => $e->getLine(),
+            ]);
+            return false;
+        }
     }
 }

@@ -6,6 +6,8 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 class Controller extends BaseController
@@ -13,6 +15,12 @@ class Controller extends BaseController
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
     //登录校验
     public $loginCheck = true;
+    //token
+    public $token ='';
+    //token data
+    public $tokendata = '';
+    //identity
+    public $isAdmin = false;
 
     //请求参数
     public $req;
@@ -23,6 +31,24 @@ class Controller extends BaseController
             session_start();
         }
         $this->req    = Request::input();
+        $referer =  $_SERVER['HTTP_REFERER'] ?? '';
+        Log::info('request' . $referer,$this->req);
+        if($this->loginCheck){
+            $this->token = $this->req['token'];
+            if(!Cache::has(md5($this->token))){
+                exit(json_encode([
+                    'code'=>100,
+                    'msg'=>'您的token已过期，请重新登录'
+                ]));
+            }else{
+                $this->tokendata = Cache::get(md5($this->token));
+            }
+            $tokenKey = md5($this->token . 'identity');
+            if(!Cache::has($tokenKey)){
+                if(strpos($this->tokendata,'isAdmin'))
+                    $this->isAdmin = true;
+            }
+        }
     }
 
     /**
@@ -46,17 +72,20 @@ class Controller extends BaseController
      * @param   $data       mixed       数据
      * @return  $this
      */
-    public function resp($rawcode = 200, $msg = 'ok', $data = [], $debug = [])
+    public function resp($rawcode = 200, $msg = 'ok', $data = [], $page = [])
     {
         if (is_array($rawcode)) {
             if (!isset($rawcode['code']) || !isset($rawcode['msg'])) {
                 // 非消息结构的数组，直接输出JSON
                 $msg  = 'ok';
+                $page = isset($rawcode['page']) ? $rawcode['page'] : [];
+                unset($rawcode['page']);
                 $data = $rawcode;
                 $code = 200;
             } else {
                 $msg  = isset($rawcode['msg']) ? $rawcode['msg'] : '';
                 $data = isset($rawcode['data']) ? $rawcode['data'] : [];
+                $page = isset($rawcode['page']) ? $rawcode['page'] : [];
                 $code = $rawcode['code'];
             }
         } else {
@@ -67,6 +96,7 @@ class Controller extends BaseController
         $resp['msg']  = $msg;
         $resp['code'] = $code ?? 200;
         $resp['data'] = $data;
+        $resp['page'] = $page;
 
         return response()->json($resp)->withCallback(Request::input('callback'));
     }

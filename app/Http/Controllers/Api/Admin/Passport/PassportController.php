@@ -13,16 +13,17 @@ use Unit\Stringunit;
 
 class PassportController extends Controller
 {
+    public $loginCheck = false;
 
     /**
      * @return PassportController
      * 后台登录
      */
     public function login(){
-        $id = $this->req['id'];
-        $password = $this->req['password'];
-        $captcha = $this->req['captcha'];
-        $type = $this->req['type'];
+        $id = $this->req['account'];
+        $password = $this->req['password'] ?? '';
+        $captcha = strtolower($this->req['captcha'] ?? '');
+        $type = $this->req['type'] ?? 1;
         if(!array_key_exists($type,ConstVariable::TYPE)){
             return $this->resp(1,'错误的场景类型');
         }
@@ -39,7 +40,7 @@ class PassportController extends Controller
         }
         if($captcha != $captchaInCache){
             Cache::forget($captchaKey);
-            return $this->resp(1,'您的图片验证码错误，请重新获取！');
+            return $this->resp(1,'您的图片验证码错误，请重新获取！' . $captchaInCache);
         }
         $adminInfo = UserInfoService::getAdmininfoById($id);
         if(empty($adminInfo)) {
@@ -56,7 +57,7 @@ class PassportController extends Controller
                 'msg' => '您的密码有误，请检查您的账号'
             ]);
         }
-        $token = Jwtunit::getToken($id,1800);
+        $token = Jwtunit::getToken('isAdmin',1800);
         Cache::put(md5($token),$id . 'isAdmin',30);
         return $this->resp(['token'=>$token]);
     }

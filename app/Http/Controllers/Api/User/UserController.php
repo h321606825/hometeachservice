@@ -8,23 +8,29 @@ use App\Http\Controllers\Api\ConstVariable;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Service\User\UserService;
 use Unit\Checkunit;
 use Unit\Jwtunit;
+use function GuzzleHttp\Psr7\str;
 
 class UserController extends Controller
 {
+    public $loginCheck=false;
     /**
      * 学生注册
      * @return UserController
      */
     public function registerStu(){
-        $base = json_decode($this->req['base'],true);
-        $info = json_decode($this->req['info'],true);
+        $base = $this->req['base'];
+        $info = $this->req['info'];
         $captcha = $this->req['captcha'];
         $type = $this->req['type'];
         $plan = $this->req['plan'] ?? '';
         $teaAsk = $this->req['teaAsk'] ?? '';
+        if(!in_array($this->req['isRigister'],[1,2])){
+            return $this->resp(1,'错误的请求类型');
+        }
         Checkunit::verification($base['phone'],2,'电话号码',11);
         Checkunit::verification($base['password'],-1,'密码',strlen($base['password']));
         Checkunit::verification($info['name'],-1,'姓名',strlen($info['name']));
@@ -53,10 +59,25 @@ class UserController extends Controller
             return $this->resp(1,'您的图片验证码错误，请重新输入');
         }
         $base['password'] = Hash::make($base['password']);
-        $res = UserService::addStu($base,$info,$plan,$teaAsk);
+        if($this->req['isRigister'] == 1){
+            $userInfo = UserService::selectStuByPhone($base['phone']);
+            if(!empty($userInfo)){
+                return $this->resp(1,'账号已存在，请前往登录');
+            }
+            $res = UserService::addStu($base,$info,$plan,$teaAsk);
+            $msg = '注册成功，请前往登录';
+        }
+        else{
+            $userInfo = UserService::selectStuByPhone($base['userId']);
+            if(empty($userInfo)){
+                return $this->resp(1,'账号不存在，请前往注册');
+            }
+            $res = UserService::updateStu($base,$info,$plan,$teaAsk);
+            $msg = '修改成功';
+        }
         if($res){
             Cache::forget($captchaKey);
-            return $this->resp(200,'注册成功，请前往登录');
+            return $this->resp(200,$msg);
         }else{
             Cache::forget($captchaKey);
             return $this->resp(1,'系统异常，请稍后再试');
@@ -67,14 +88,16 @@ class UserController extends Controller
      * 教师注册
      */
     public function registerTea(){
-        $base = json_decode($this->req['base'],true);
-        $info = json_decode($this->req['info'],true);
-        $captcha = $this->req['captcha'];
-        $type = $this->req['type'];
+        $base = $this->req['base'] ?? '';
+        $info = $this->req['info'] ?? '';
+        $captcha = $this->req['captcha'] ?? '';
+        $type = $this->req['type'] ?? '';
         $plan = '';
         if(!empty($this->req['plan']))
             $plan = $this->req['plan'];
-
+        if(!in_array($this->req['isRigister'],[1,2])){
+            return $this->resp(1,'错误的请求类型');
+        }
         Checkunit::verification($base['phone'],2,'电话号码',11);
         Checkunit::verification($base['password'],-1,'密码',strlen($base['password']));
         Checkunit::verification($info['name'],-1,'姓名',strlen($info['name']));
@@ -89,6 +112,8 @@ class UserController extends Controller
         Checkunit::verification($info['major'],-1,'所学专业',strlen($info['major']));
         Checkunit::verification($info['teaInfo'],-1,'个人简介');
         Checkunit::verification($info['fee'],4,'课时费用');
+        Checkunit::verification($info['area'],-1,'所在区域');
+        Checkunit::verification($info['school'],-1,'就读学校');
         Checkunit::verification($captcha,-1,'验证码',4);
         if(!array_key_exists($type,ConstVariable::TYPE)){
             return $this->resp(1,'错误的场景类型');
@@ -103,10 +128,24 @@ class UserController extends Controller
             return $this->resp(1,'您的图片验证码错误，请重新输入');
         }
         $base['password'] = Hash::make($base['password']);
-        $res = UserService::addTea($base,$info,$plan);
+        if($this->req['isRigister'] == 1){
+            $userInfo = UserService::selectTeaByPhone($base['phone']);
+            if(!empty($userInfo)){
+                return $this->resp(1,'账号已存在，请前往登录');
+            }
+            $res = UserService::addTea($base,$info,$plan);
+            $msg = '注册成功，请前往登录';
+        }else{
+            $userInfo = UserService::selectTeaByPhone($base['userId']);
+            if(empty($userInfo)){
+                return $this->resp(1,'账号不存在，请前往注册');
+            }
+            $res = UserService::updateTea($base,$info,$plan);
+            $msg = '修改成功';
+        }
         if($res){
             Cache::forget($captchaKey);
-            return $this->resp(200,'注册成功，请前往登录');
+            return $this->resp(200,$msg);
         }else{
             Cache::forget($captchaKey);
             return $this->resp(1,'系统异常，请稍后在试');
@@ -156,16 +195,19 @@ class UserController extends Controller
                 'msg' => '您的密码有误，请检查您的账号'
             ]);
         }
-        $token = Jwtunit::getToken($account,1800);
-        Cache::put(md5($token),$account,30);
+        $token = Jwtunit::getToken($user['id'],1800);
+        Cache::put(md5($token),$user['id'],30);
+        $identity = 0;
         if(array_key_exists('identity',$user)){
             //学生
+            $identity = 3;
             Cache::put(md5($token . 'identity'),'3',30);
         }else{
+            $identity = 2;
             Cache::put(md5($token . 'identity'),'2',30);
         }
 
-        return $this->resp(200,'登录成功',['token'=>$token]);
+        return $this->resp(200,'登录成功',['token'=>$token,'identity'=>$identity]);
     }
 
     /**
@@ -173,7 +215,7 @@ class UserController extends Controller
      * 用户退出登录
      */
     public function logout(){
-        $token = $this->req['token'];
+        $token = $this->req['token'] ?? "";
         Cache::forget($token);
         return $this->resp(200,'注销成功');
     }
@@ -188,13 +230,16 @@ class UserController extends Controller
         if(Cache::has($tokenKey)){
             $identity = Cache::get($tokenKey);
         }else{
-            return $this->resp(1,'无效的token，请重新登录');
+            return $this->resp(100,'无效的token，请重新登录');
         }
         $account = Cache::get(md5($token));
         if($identity == 3){
             $res = UserService::selectStuByPhone($account);
+            $res['identity'] = '3';
         }else{
             $res = UserService::selectTeaByPhone($account);
+            // $res[0]['birth'] = date('Y/m/d',strtotime($res[0]['birth']));
+            $res['identity'] = 2;
         }
         return $this->resp(200,'ok',$res);
     }
@@ -204,8 +249,16 @@ class UserController extends Controller
      */
     public function getStuList(){
         $size = $this->req['size'] ?? 10;
-        $offset = $this->req['offset'] ?? 0;
-        $res = UserService::selectAllStu($size,$offset);
+        $page = $this->req['page'] ?? 1;
+        $query = $this->req['query'] ?? '';
+        $res = UserService::selectAllStu($query,$size,$page);
+        UserService::serializeStu($res);
+        $res['page'] = [
+            'offset'=>$page,
+            'size'=>$size,
+            'total'=>$res['total'],
+        ];
+        unset($res['total']);
         return $this->resp($res);
     }
 
@@ -215,8 +268,16 @@ class UserController extends Controller
      */
     public function getTeaList(){
         $size = $this->req['size'] ?? 10;
-        $offset = $this->req['offset'] ?? 0;
-        $res = UserService::selectAllTea($size,$offset);
+        $page = $this->req['page'] ?? 1;
+        $query = $this->req['query'] ?? '';
+        $res = UserService::selectAllTea($query,$size,$page);
+        UserService::serializeTea($res);
+        $res['page'] = [
+            'offset'=>$page,
+            'size'=>$size,
+            'total'=>$res['total'],
+        ];
+        unset($res['total']);
         return $this->resp($res);
     }
 }
